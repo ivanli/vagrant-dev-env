@@ -138,9 +138,11 @@ Vagrant.configure(2) do |config|
     chef.add_recipe "java"
     chef.json = {
       "java" => {
-        "install_flavor" => "oracle",
-        "jdk_version" => "8",
-        "oracle" => { "accept_oracle_download_terms" => true }
+        "install_flavor" => "openjdk",
+        "jdk_version" => "7",
+        "openjdk_packages" => ["openjdk-7-jdk", "openjdk-7-jre-headless"],
+        "set_etc_environment" => true,
+        "accept_license_agreement" => true
       }
     }
   end

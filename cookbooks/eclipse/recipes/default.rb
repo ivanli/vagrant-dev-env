@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-include_recipe "java"
+#include_recipe "java"
 include_recipe "ark"
 
 if node['eclipse']['url'].empty?
