@@ -97,16 +97,19 @@ Vagrant.configure(2) do |config|
     # Display the VirtualBox GUI when booting the machine
     vb.gui = true
     # Customize the amount of memory on the VM:
-    vb.memory = "2048"
-    vb.cpus = 4
+    vb.memory = "4096"
+    vb.cpus = 2
     vb.customize ["modifyvm", :id, "--vram", "256"]
+    vb.customize ["modifyvm", :id, "--usb", "on"]
+    vb.customize ["modifyvm", :id, "--clipboard", "bidirectional"]
+    vb.customize ["modifyvm", :id, "--draganddrop", "bidirectional"]
   end
 
   # Refer to bug #5199. Clearing sync folders help chef shared folders work better.
-  config.trigger.after [:reload, :halt], stdout: true do 
+  config.trigger.after [:halt], stdout: true do 
     `rm .vagrant/machines/default/virtualbox/synced_folders`
   end
-  config.trigger.before [:up], stdout: true do 
+  config.trigger.before [:up, :reload], stdout: true do 
     `rm .vagrant/machines/default/virtualbox/synced_folders`
   end
   

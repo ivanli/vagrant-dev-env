@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+# Disabling Java recipe to allow for existing Java installation to work properly.
+# Otherwise this defaults to Java 6.
 #include_recipe "java"
 include_recipe "ark"
 
