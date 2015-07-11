@@ -20,7 +20,7 @@ echo "Setting debconf-set-selections"
 
 sudo debconf-set-selections <<EOF
   gdm     shared/default-x-display-manager      select    lightdm
-  lightdm shared/default-x-display-manager      select    lightdm      
+  lightdm shared/default-x-display-manager      select    lightdm
 EOF
 
 echo "Installing lightdm"
@@ -36,7 +36,7 @@ $add_eclipse_launcher_script = <<SCRIPT
 
 if [ ! -f /usr/share/applications/eclipse-luna.desktop ]; then
 cat > /usr/share/applications/eclipse-luna.desktop <<EOL
-  
+
 [Desktop Entry]
 Type=Application
 Encoding=UTF-8
@@ -101,18 +101,20 @@ Vagrant.configure(2) do |config|
     vb.cpus = 2
     vb.customize ["modifyvm", :id, "--vram", "256"]
     vb.customize ["modifyvm", :id, "--usb", "on"]
+    vb.customize ["modifyvm", :id, "--usbehci", "on"]
     vb.customize ["modifyvm", :id, "--clipboard", "bidirectional"]
     vb.customize ["modifyvm", :id, "--draganddrop", "bidirectional"]
+
   end
 
   # Refer to bug #5199. Clearing sync folders help chef shared folders work better.
-  config.trigger.after [:halt], stdout: true do 
+  config.trigger.after [:halt], stdout: true do
     `rm .vagrant/machines/default/virtualbox/synced_folders`
   end
-  config.trigger.before [:up, :reload], stdout: true do 
+  config.trigger.before [:up, :reload], stdout: true do
     `rm .vagrant/machines/default/virtualbox/synced_folders`
   end
-  
+
   # View the documentation for the provider you are using for more
   # information on available options.
 
@@ -132,7 +134,7 @@ Vagrant.configure(2) do |config|
 
   # Provision C/C++ tools
   config.vm.provision "shell", inline: 'sudo apt-get install -y build-essential'
-  
+
   #
   # Provision Java JDK 8
   #
@@ -167,12 +169,12 @@ Vagrant.configure(2) do |config|
           {"http://download.eclipse.org/releases/luna" => "org.eclipse.cdt.build.crossgcc.feature.group"},
           {"http://download.eclipse.org/releases/luna" => "org.eclipse.cdt.debug.gdbjtag.feature.group"},
           {"http://download.eclipse.org/releases/luna" => "org.eclipse.cdt.debug.ui.memory.feature.group"},
-          
+
           {"http://download.eclipse.org/releases/luna" => "org.eclipse.jdt.feature.group"},
           {"http://download.eclipse.org/releases/luna" => "org.eclipse.m2e.feature.feature.group"},
 
           {"http://download.eclipse.org/releases/luna" => "org.eclipse.wst.xml_ui.feature.feature.group"},
-          
+
           {"http://download.eclipse.org/releases/luna" => "org.eclipse.egit.feature.group"},
           {"http://download.eclipse.org/releases/luna" => "org.eclipse.team.svn.feature.group"},
 
