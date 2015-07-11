@@ -1,0 +1,27 @@
+[submodule "cookbooks/android-sdk"]
+	path = cookbooks/android-sdk
+	url = https://github.com/gildegoma/chef-android-sdk.git
+[submodule "cookbooks/apt"]
+	path = cookbooks/apt
+	url = https://github.com/opscode-cookbooks/apt.git
+[submodule "cookbooks/ark"]
+	path = cookbooks/ark
+	url = https://github.com/burtlo/ark.git
+[submodule "cookbooks/build-essential"]
+	path = cookbooks/build-essential
+	url = https://github.com/opscode-cookbooks/build-essential.git
+[submodule "cookbooks/eclipse"]
+	path = cookbooks/eclipse
+	url = https://github.com/geocent-cookbooks/eclipse.git
+[submodule "cookbooks/emacs24"]
+	path = cookbooks/emacs24
+	url = https://github.com/sliim-cookbooks/emacs24.git
+[submodule "cookbooks/java"]
+	path = cookbooks/java
+	url = https://github.com/agileorbit-cookbooks/java.git
+[submodule "cookbooks/ohai"]
+	path = cookbooks/ohai
+	url = https://github.com/opscode-cookbooks/ohai.git
+[submodule "cookbooks/ruby"]
+	path = cookbooks/ruby
+	url = https://github.com/opscode-cookbooks/ruby.git
