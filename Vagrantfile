@@ -24,9 +24,9 @@ sudo debconf-set-selections <<EOF
 EOF
 
 echo "Installing lightdm"
-sudo DEBIAN_FRONTEND="noninteractive" apt-get install -y lightdm=1.10.5-0ubuntu1
+sudo DEBIAN_FRONTEND="noninteractive" apt-get install -y lightdm
 echo "Installing ubuntu-gnome-desktop"
-sudo DEBIAN_FRONTEND="noninteractive" apt-get install -y ubuntu-gnome-desktop=0.32
+sudo DEBIAN_FRONTEND="noninteractive" apt-get install -y ubuntu-gnome-desktop
 echo "Reconfiguring to lightdm"
 sudo DEBIAN_FRONTEND="noninteractive" dpkg-reconfigure lightdm
 
