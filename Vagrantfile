@@ -1,57 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# Custom shell scripts for provisioning below
-$install_gui_script = <<SCRIPT
-
-echo "Updating apt sources"
-
-if ! grep -q '# Mirror sources' /etc/apt/sources.list; then
-  sudo sed -i -e '1ideb mirror://mirrors.ubuntu.com/mirrors.txt trusty main restricted universe multiverse' /etc/apt/sources.list
-  sudo sed -i -e '1ideb mirror://mirrors.ubuntu.com/mirrors.txt trusty-updates main restricted universe multiverse' /etc/apt/sources.list
-  sudo sed -i -e '1ideb mirror://mirrors.ubuntu.com/mirrors.txt trusty-backports main restricted universe multiverse' /etc/apt/sources.list
-  sudo sed -i -e '1ideb mirror://mirrors.ubuntu.com/mirrors.txt trusty-security main restricted universe multiverse' /etc/apt/sources.list
-  sudo sed -i -e '1i# Mirror sources' /etc/apt/sources.list
-  sudo apt-get update
-fi
-
-
-echo "Setting debconf-set-selections"
-
-sudo debconf-set-selections <<EOF
-  gdm     shared/default-x-display-manager      select    lightdm
-  lightdm shared/default-x-display-manager      select    lightdm
-EOF
-
-echo "Installing lightdm"
-sudo DEBIAN_FRONTEND="noninteractive" apt-get install -y lightdm
-echo "Installing ubuntu-gnome-desktop"
-sudo DEBIAN_FRONTEND="noninteractive" apt-get install -y ubuntu-gnome-desktop
-echo "Reconfiguring to lightdm"
-sudo DEBIAN_FRONTEND="noninteractive" dpkg-reconfigure lightdm
-
-SCRIPT
-
-$add_eclipse_launcher_script = <<SCRIPT
-
-if [ ! -f /usr/share/applications/eclipse-luna.desktop ]; then
-cat > /usr/share/applications/eclipse-luna.desktop <<EOL
-
-[Desktop Entry]
-Type=Application
-Encoding=UTF-8
-Name=Eclipse Luna
-Comment=IDE for C/C++/java development
-Icon=/usr/local/eclipse-luna/icon.xpm
-Exec=/usr/local/eclipse-luna/eclipse
-Terminal=false
-Categories=ide;
-
-EOL
-fi
-
-SCRIPT
-
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
@@ -89,10 +38,6 @@ Vagrant.configure(2) do |config|
   # argument is a set of non-required options.
   # config.vm.synced_folder "../data", "/vagrant_data"
 
-  # Provider-specific configuration so you can fine-tune various
-  # backing providers for Vagrant. These expose provider-specific options.
-  # Example for VirtualBox:
-  #
   config.vm.provider "virtualbox" do |vb|
     # Display the VirtualBox GUI when booting the machine
     vb.gui = true
@@ -114,33 +59,19 @@ Vagrant.configure(2) do |config|
   config.trigger.before [:up, :reload], stdout: true do
     `rm .vagrant/machines/default/virtualbox/synced_folders`
   end
-
-  # View the documentation for the provider you are using for more
-  # information on available options.
-
-  # Define a Vagrant Push strategy for pushing to Atlas. Other push strategies
-  # such as FTP and Heroku are also available. See the documentation at
-  # https://docs.vagrantup.com/v2/push/atlas.html for more information.
-  # config.push.define "atlas" do |push|
-  #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
-  # end
-
-  # Enable provisioning with a shell script. Additional provisioners such as
-  # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
-  # documentation for more information about their specific syntax and use.
-
-  # Provision base box customisations. This includes faster mirrors, GUI frontend
-  config.vm.provision "shell", inline: $install_gui_script
-
-  # Provision C/C++ tools
-  config.vm.provision "shell", inline: 'sudo apt-get install -y build-essential'
-
-  #
-  # Provision Java JDK 8
-  #
+  
   config.vm.provision "chef_solo" do |chef|
     chef.cookbooks_path = "cookbooks"
-    chef.add_recipe "java"
+    
+    #chef.add_recipe "gnome3"
+    #chef.add_recipe "build-essential"
+    #chef.add_recipe "java"
+        
+    #chef.add_recipe "android-sdk"
+        
+    #chef.add_recipe "eclipse"
+    chef.add_recipe "clion"
+    
     chef.json = {
       "java" => {
         "install_flavor" => "openjdk",
@@ -148,15 +79,7 @@ Vagrant.configure(2) do |config|
         "openjdk_packages" => ["openjdk-7-jdk", "openjdk-7-jre-headless"],
         "set_etc_environment" => true,
         "accept_license_agreement" => true
-      }
-    }
-  end
-
-  # Provision Eclipse with plugins for C/C++/Java development
-  config.vm.provision "chef_solo" do |chef|
-    chef.cookbooks_path = "cookbooks"
-    chef.add_recipe "eclipse"
-    chef.json = {
+      },
       "eclipse" => {
         "version" => "luna",
         "release_code" => "SR2",
@@ -182,8 +105,4 @@ Vagrant.configure(2) do |config|
       }
     }
   end
-  config.vm.provision "shell", inline: $add_eclipse_launcher_script
-
-  # Provision & configure Emacs
-  config.vm.provision "shell", inline: 'sudo apt-get install -y emacs24'
 end
