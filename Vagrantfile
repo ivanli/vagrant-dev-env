@@ -59,19 +59,19 @@ Vagrant.configure(2) do |config|
   config.trigger.before [:up, :reload], stdout: true do
     `rm .vagrant/machines/default/virtualbox/synced_folders`
   end
-  
+
   config.vm.provision "chef_solo" do |chef|
     chef.cookbooks_path = "cookbooks"
-    
-    #chef.add_recipe "gnome3"
-    #chef.add_recipe "build-essential"
-    #chef.add_recipe "java"
-        
+
+    chef.add_recipe "gnome3"
+    chef.add_recipe "build-essential"
+    chef.add_recipe "java"
+
     #chef.add_recipe "android-sdk"
-        
-    #chef.add_recipe "eclipse"
-    chef.add_recipe "clion"
-    
+
+    chef.add_recipe "eclipse"
+    #chef.add_recipe "clion"
+
     chef.json = {
       "java" => {
         "install_flavor" => "openjdk",
@@ -100,7 +100,12 @@ Vagrant.configure(2) do |config|
 
           {"http://download.eclipse.org/releases/luna" => "org.eclipse.egit.feature.group"},
           {"http://download.eclipse.org/releases/luna" => "org.eclipse.team.svn.feature.group"},
-
+        ]
+      }
+      "ruby" => {
+        "version" => "2.0",
+        "gem" => [
+          'jekyll'
         ]
       }
     }

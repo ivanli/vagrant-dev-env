@@ -24,4 +24,4 @@
 	url = https://github.com/opscode-cookbooks/ohai.git
 [submodule "cookbooks/ruby"]
 	path = cookbooks/ruby
-	url = https://github.com/opscode-cookbooks/ruby.git
+	url = git@github.com:ivanli/cookbook-ruby.git
