@@ -25,3 +25,30 @@
 [submodule "cookbooks/ruby"]
 	path = cookbooks/ruby
 	url = git@github.com:ivanli/cookbook-ruby.git
+[submodule "cookbooks/gnome3"]
+	path = cookbooks/gnome3
+	url = git@github.com:ivanli/cookbook-gnome3.git
+[submodule "cookbooks/git"]
+	path = cookbooks/git
+	url = https://github.com/jssjr/git.git
+[submodule "cookbooks/atom"]
+	path = cookbooks/atom
+	url = https://github.com/mohitsethi/chef-atom.git
+[submodule "cookbooks/dmg"]
+	path = cookbooks/dmg
+	url = https://github.com/chef-cookbooks/dmg.git
+[submodule "cookbooks/windows"]
+	path = cookbooks/windows
+	url = https://github.com/chef-cookbooks/windows.git
+[submodule "cookbooks/chef_handler"]
+	path = cookbooks/chef_handler
+	url = https://github.com/chef-cookbooks/chef_handler.git
+[submodule "cookbooks/yum-epel"]
+	path = cookbooks/yum-epel
+	url = https://github.com/chef-cookbooks/yum-epel.git
+[submodule "cookbooks/yum"]
+	path = cookbooks/yum
+	url = https://github.com/chef-cookbooks/yum.git
+[submodule "cookbooks/chocolatey"]
+	path = cookbooks/chocolatey
+	url = https://github.com/chocolatey/chocolatey-cookbook.git

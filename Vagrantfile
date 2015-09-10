@@ -39,11 +39,12 @@ Vagrant.configure(2) do |config|
   # config.vm.synced_folder "../data", "/vagrant_data"
 
   config.vm.provider "virtualbox" do |vb|
+	vb.name = "Development"
     # Display the VirtualBox GUI when booting the machine
     vb.gui = true
     # Customize the amount of memory on the VM:
     vb.memory = "4096"
-    vb.cpus = 2
+    vb.cpus = 4
     vb.customize ["modifyvm", :id, "--vram", "256"]
     vb.customize ["modifyvm", :id, "--usb", "on"]
     vb.customize ["modifyvm", :id, "--usbehci", "on"]
@@ -63,14 +64,27 @@ Vagrant.configure(2) do |config|
   config.vm.provision "chef_solo" do |chef|
     chef.cookbooks_path = "cookbooks"
 
+	## UI for the VM
     chef.add_recipe "gnome3"
+
+	## Version control
+	chef.add_recipe "git"
+	
+	## Basic editing
+	chef.add_recipe "atom"
+	
+    ## C/C++ development
     chef.add_recipe "build-essential"
+    #chef.add_recipe "cppcheck"
+    #chef.add_recipe "vera++"
+    #chef.add_recipe "clang"
+
     chef.add_recipe "java"
 
     #chef.add_recipe "android-sdk"
 
+    # fix launcher icon installation
     chef.add_recipe "eclipse"
-    #chef.add_recipe "clion"
 
     chef.json = {
       "java" => {
@@ -101,13 +115,21 @@ Vagrant.configure(2) do |config|
           {"http://download.eclipse.org/releases/luna" => "org.eclipse.egit.feature.group"},
           {"http://download.eclipse.org/releases/luna" => "org.eclipse.team.svn.feature.group"},
         ]
-      }
+      },
       "ruby" => {
         "version" => "2.0",
         "gem" => [
-          'jekyll'
+          'bundler',
+		  'rake'
         ]
       }
     }
   end
+
+  config.vm.provision "shell", inline: <<-EOH
+    apt-get install giggle
+	
+    gem install bundler
+	gem install rake
+  EOH
 end
