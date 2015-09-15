@@ -52,3 +52,9 @@
 [submodule "cookbooks/chocolatey"]
 	path = cookbooks/chocolatey
 	url = https://github.com/chocolatey/chocolatey-cookbook.git
+[submodule "cookbooks/dropbox"]
+	path = cookbooks/dropbox
+	url = https://github.com/patcon/dropbox-cookbook.git
+[submodule "cookbooks/pacman"]
+	path = cookbooks/pacman
+	url = https://github.com/jesseadams/pacman.git

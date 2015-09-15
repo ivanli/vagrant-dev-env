@@ -64,14 +64,15 @@ Vagrant.configure(2) do |config|
   config.vm.provision "chef_solo" do |chef|
     chef.cookbooks_path = "cookbooks"
 
-	## UI for the VM
+    ## UI for the VM
     chef.add_recipe "gnome3"
 
-	## Version control
-	chef.add_recipe "git"
+    ## Version control
+    chef.add_recipe "git"
 	
-	## Basic editing
-	chef.add_recipe "atom"
+    ## Basic tools
+    chef.add_recipe "atom"
+    chef.add_recipe "dropbox"
 	
     ## C/C++ development
     chef.add_recipe "build-essential"
@@ -128,6 +129,7 @@ Vagrant.configure(2) do |config|
 
   config.vm.provision "shell", inline: <<-EOH
     apt-get install giggle
+	apt-get install wine
 	
     gem install bundler
 	gem install rake
