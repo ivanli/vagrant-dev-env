@@ -11,7 +11,7 @@ Vagrant.configure(2) do |config|
   # https://docs.vagrantup.com.
 
   # You can search for boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = "ubuntu/trusty64"
+  config.vm.box = "ivanli/lubuntu64"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -39,7 +39,7 @@ Vagrant.configure(2) do |config|
   # config.vm.synced_folder "../data", "/vagrant_data"
 
   config.vm.provider "virtualbox" do |vb|
-	vb.name = "Development"
+    vb.name = "Development"
     # Display the VirtualBox GUI when booting the machine
     vb.gui = true
     # Customize the amount of memory on the VM:
@@ -50,6 +50,8 @@ Vagrant.configure(2) do |config|
     vb.customize ["modifyvm", :id, "--usbehci", "on"]
     vb.customize ["modifyvm", :id, "--clipboard", "bidirectional"]
     vb.customize ["modifyvm", :id, "--draganddrop", "bidirectional"]
+    vb.customize ["modifyvm", :id, "--accelerate3d", "on"]
+    vb.customize ["modifyvm", :id, "--paravirtprovider", "kvm"]
 
   end
 
@@ -61,27 +63,39 @@ Vagrant.configure(2) do |config|
     `rm .vagrant/machines/default/virtualbox/synced_folders`
   end
 
+  # Install apps through apt-get
+  config.vm.provision "shell", inline: <<-EOH
+    add-apt-repository ppa:gnome3-team/gnome3
+    apt-get update
+
+    apt-get install build-essential
+
+    debconf-set-selections <<-EOF
+      gdm     shared/default-x-display-manager      select    lightdm
+      lightdm shared/default-x-display-manager      select    lightdm
+    EOF
+    apt-get install ubuntu-gnome-desktop
+    DEBIAN_FRONTEND="noninteractive" dpkg-reconfigure lightdm
+
+    apt-get install git -y
+    apt-get install giggle -y
+
+    apt-get install wine -y
+
+    apt-get install vim -y
+
+    apt-get install npm -y
+    npm install --global glup
+
+    gem install bundler
+    gem install rake
+  EOH
+
+  # Install apps via cookbooks
   config.vm.provision "chef_solo" do |chef|
     chef.cookbooks_path = "cookbooks"
 
-    ## UI for the VM
-    chef.add_recipe "gnome3"
-
-    ## Version control
-    chef.add_recipe "git"
-	
-    ## Basic tools
-    chef.add_recipe "atom"
-    chef.add_recipe "dropbox"
-	
-    ## C/C++ development
-    chef.add_recipe "build-essential"
-    #chef.add_recipe "cppcheck"
-    #chef.add_recipe "vera++"
-    #chef.add_recipe "clang"
-
     chef.add_recipe "java"
-
     #chef.add_recipe "android-sdk"
 
     # fix launcher icon installation
@@ -126,12 +140,4 @@ Vagrant.configure(2) do |config|
       }
     }
   end
-
-  config.vm.provision "shell", inline: <<-EOH
-    apt-get install giggle
-	apt-get install wine
-	
-    gem install bundler
-	gem install rake
-  EOH
 end
