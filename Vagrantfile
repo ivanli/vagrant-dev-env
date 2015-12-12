@@ -66,40 +66,39 @@ Vagrant.configure(2) do |config|
   # Install apps through apt-get
   config.vm.provision "shell", inline: <<-EOH
     add-apt-repository ppa:gnome3-team/gnome3
+    add-apt-repository ppa:inkscape.dev/stable
     apt-get update
 
-    apt-get install build-essential
+    apt-get install build-essential -y
 
-    debconf-set-selections <<-EOF
-      gdm     shared/default-x-display-manager      select    lightdm
-      lightdm shared/default-x-display-manager      select    lightdm
-    EOF
-    apt-get install ubuntu-gnome-desktop
-    DEBIAN_FRONTEND="noninteractive" dpkg-reconfigure lightdm
+    debconf-set-selections <<< "gdm     shared/default-x-display-manager      select    lightdm"
+    debconf-set-selections <<< "lightdm     shared/default-x-display-manager      select    lightdm"
+    DEBIAN_FRONTEND="noninteractive" apt-get install gnome-shell -y
+    apt-get install gnome-tweak-tool -y
 
     apt-get install git -y
     apt-get install giggle -y
 
-    apt-get install wine -y
-
     apt-get install vim -y
 
-    apt-get install npm -y
-    npm install --global glup
+    curl -sL https://deb.nodesource.com/setup_4.x | bash -
+    apt-get install -y nodejs
 
     gem install bundler
     gem install rake
+
+    apt-get install inkscape -y
   EOH
 
   # Install apps via cookbooks
   config.vm.provision "chef_solo" do |chef|
     chef.cookbooks_path = "cookbooks"
 
-    chef.add_recipe "java"
+    #chef.add_recipe "java"
     #chef.add_recipe "android-sdk"
 
     # fix launcher icon installation
-    chef.add_recipe "eclipse"
+    #chef.add_recipe "eclipse"
 
     chef.json = {
       "java" => {
