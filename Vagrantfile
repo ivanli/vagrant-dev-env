@@ -50,7 +50,7 @@ Vagrant.configure(2) do |config|
     vb.customize ["modifyvm", :id, "--usbehci", "on"]
     vb.customize ["modifyvm", :id, "--clipboard", "bidirectional"]
     vb.customize ["modifyvm", :id, "--draganddrop", "bidirectional"]
-    vb.customize ["modifyvm", :id, "--accelerate3d", "on"]
+    vb.customize ["modifyvm", :id, "--accelerate3d", "off"]
     vb.customize ["modifyvm", :id, "--paravirtprovider", "kvm"]
 
   end
@@ -65,9 +65,17 @@ Vagrant.configure(2) do |config|
 
   # Install apps through apt-get
   config.vm.provision "shell", inline: <<-EOH
-    add-apt-repository ppa:gnome3-team/gnome3
-    add-apt-repository ppa:inkscape.dev/stable
-    apt-get update
+    if ! grep -q "gnome3-team/gnome3" /etc/apt/sources.list /etc/apt/sources.list.d/*; then
+      add-apt-repository ppa:gnome3-team/gnome3
+      updated=true
+    fi
+    if ! grep -q "inkscape.dev/stable" /etc/apt/sources.list /etc/apt/sources.list.d/*; then
+      add-apt-repository ppa:inkscape.dev/stable
+      updated=true
+    fi
+    if [ "$updated" = true ] ; then
+      apt-get update
+    fi
 
     apt-get install build-essential -y
 
@@ -80,14 +88,22 @@ Vagrant.configure(2) do |config|
     apt-get install giggle -y
 
     apt-get install vim -y
+    apt-get install vim-gnome -y 
 
-    curl -sL https://deb.nodesource.com/setup_4.x | bash -
+    if ! grep -q "inkscape.dev/stable" /etc/apt/sources.list /etc/apt/sources.list.d/*; then
+      curl -sL https://deb.nodesource.com/setup_4.x | bash -
+    fi
     apt-get install -y nodejs
 
+    apt-get install ruby2.0 -y
     gem install bundler
     gem install rake
 
     apt-get install inkscape -y
+    apt-get install nemo -y
+    xdg-mime default nemo.desktop inode/directory application/x-gnome-saved-search
+    gsettings set org.gnome.desktop.background show-desktop-icons false
+    gsettings set org.nemo.desktop show-desktop-icons true
   EOH
 
   # Install apps via cookbooks
