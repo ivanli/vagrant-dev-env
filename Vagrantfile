@@ -11,7 +11,7 @@ Vagrant.configure(2) do |config|
   # https://docs.vagrantup.com.
 
   # You can search for boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = "ivanli/lubuntu64"
+  config.vm.box = "halvards/lubuntu1604"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -65,94 +65,61 @@ Vagrant.configure(2) do |config|
 
   # Install apps through apt-get
   config.vm.provision "shell", inline: <<-EOH
-    if ! grep -q "gnome3-team/gnome3" /etc/apt/sources.list /etc/apt/sources.list.d/*; then
-      add-apt-repository ppa:gnome3-team/gnome3
-      updated=true
-    fi
-    if ! grep -q "inkscape.dev/stable" /etc/apt/sources.list /etc/apt/sources.list.d/*; then
-      add-apt-repository ppa:inkscape.dev/stable
-      updated=true
-    fi
-    if [ "$updated" = true ] ; then
-      apt-get update
-    fi
 
-    apt-get install build-essential -y
+    echo "-- Preparing.."
+    apt-get update
+	apt-get install bash-completion -y
+    echo "..done!"
 
-    debconf-set-selections <<< "gdm     shared/default-x-display-manager      select    lightdm"
-    debconf-set-selections <<< "lightdm     shared/default-x-display-manager      select    lightdm"
-    DEBIAN_FRONTEND="noninteractive" apt-get install gnome-shell -y
-    apt-get install gnome-tweak-tool -y
+    echo "-- Installing XFCE.."
+    apt-get install xubuntu-desktop -y
+    echo "..done!"
 
-    apt-get install git -y
-    apt-get install giggle -y
+    echo "-- Installing build tools.."
+    apt-get install build-essential cmake -y
+    echo "..done!"
 
+    echo "-- Installing Git.."
+    apt-get install git giggle git-flow -y
+    echo "..done!"
+
+    echo "-- Installing Vim.."
     apt-get install vim -y
-    apt-get install vim-gnome -y 
+    apt-get install vim-gtk -y 
+    echo "..done!"
 
-    if ! grep -q "inkscape.dev/stable" /etc/apt/sources.list /etc/apt/sources.list.d/*; then
-      curl -sL https://deb.nodesource.com/setup_4.x | bash -
+    echo "-- Installing Ruby.."
+    if ! hash rvm 2>/dev/null ; then
+      gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+      curl -sSL https://get.rvm.io | bash -s stable
     fi
-    apt-get install -y nodejs
+    echo "done!"
 
-    apt-get install ruby2.0 -y
-    gem install bundler
-    gem install rake
+    echo "-- Installing Python.."
+    apt-get install python python-dev python-pip -y
+    apt-get install python3 python3-dev python3-pip -y
+    echo "done!"
 
-    apt-get install inkscape -y
-    apt-get install nemo -y
-    xdg-mime default nemo.desktop inode/directory application/x-gnome-saved-search
-    gsettings set org.gnome.desktop.background show-desktop-icons false
-    gsettings set org.nemo.desktop show-desktop-icons true
+    echo "-- Setting up python virutal env.."
+    pip install virtualenvwrapper
+    if ! grep -q 'WORKON_HOME=/home/vagrant/.virtualenvs' '/home/vagrant/.bashrc'; then
+      echo "..adding to bashrc.."
+      echo "export WORKON_HOME=/home/vagrant/.virtualenvs" >> /home/vagrant/.bashrc
+      echo "source /usr/local/bin/virtualenvwrapper.sh" >> /home/vagrant/.bashrc
+      echo "..done!"
+    fi
+    echo "done!"
+
+    echo "-- Installing library dependencies for photobooth development.."
+    apt-get install dpkg-dev swig libwebkitgtk-dev libjpeg-dev libtiff-dev freeglut3 freeglut3-dev libgtk2.0-dev libsdl1.2-dev libgstreamer-plugins-base0.10-dev -y
+    apt-get install libgphoto2-dev -y
+    apt-get install libnotify-dev -y
+    apt-get install libxvidcore4 libxvidcore-dev -y
+    echo "done!"
+	
+    echo "-- Cleaning up.."
+    apt autoremove -y
+    echo "done!"
+	
   EOH
-
-  # Install apps via cookbooks
-  config.vm.provision "chef_solo" do |chef|
-    chef.cookbooks_path = "cookbooks"
-
-    #chef.add_recipe "java"
-    #chef.add_recipe "android-sdk"
-
-    # fix launcher icon installation
-    #chef.add_recipe "eclipse"
-
-    chef.json = {
-      "java" => {
-        "install_flavor" => "openjdk",
-        "jdk_version" => "7",
-        "openjdk_packages" => ["openjdk-7-jdk", "openjdk-7-jre-headless"],
-        "set_etc_environment" => true,
-        "accept_license_agreement" => true
-      },
-      "eclipse" => {
-        "version" => "luna",
-        "release_code" => "SR2",
-        "arch" => "x86_64",
-        "suite" => "java",
-        "os" => "linux-gtk",
-        "plugins" => [
-          {"http://download.eclipse.org/releases/luna" => "org.eclipse.cdt.feature.group"},
-          {"http://download.eclipse.org/releases/luna" => "org.eclipse.cdt.managedbuilder.llvm.feature.group"},
-          {"http://download.eclipse.org/releases/luna" => "org.eclipse.cdt.build.crossgcc.feature.group"},
-          {"http://download.eclipse.org/releases/luna" => "org.eclipse.cdt.debug.gdbjtag.feature.group"},
-          {"http://download.eclipse.org/releases/luna" => "org.eclipse.cdt.debug.ui.memory.feature.group"},
-
-          {"http://download.eclipse.org/releases/luna" => "org.eclipse.jdt.feature.group"},
-          {"http://download.eclipse.org/releases/luna" => "org.eclipse.m2e.feature.feature.group"},
-
-          {"http://download.eclipse.org/releases/luna" => "org.eclipse.wst.xml_ui.feature.feature.group"},
-
-          {"http://download.eclipse.org/releases/luna" => "org.eclipse.egit.feature.group"},
-          {"http://download.eclipse.org/releases/luna" => "org.eclipse.team.svn.feature.group"},
-        ]
-      },
-      "ruby" => {
-        "version" => "2.0",
-        "gem" => [
-          'bundler',
-		  'rake'
-        ]
-      }
-    }
-  end
 end
