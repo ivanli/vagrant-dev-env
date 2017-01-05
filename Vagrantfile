@@ -115,6 +115,7 @@ Vagrant.configure(2) do |config|
     apt-get install libgphoto2-dev -y
     apt-get install libnotify-dev -y
     apt-get install libxvidcore4 libxvidcore-dev -y
+    apt-get install libcups2-dev -y
     echo "done!"
 	
     echo "-- Cleaning up.."
